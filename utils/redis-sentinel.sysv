@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+# redis-sentinel	This shell script takes care of starting and stopping sentinel.
+#
+# chkconfig: 345 88 12
+# description: redis-sentinel.  Redis Sentinel is a system designed to help managing Redis instances.
+# processname: redis-sentinel-tagged
+# config: /etc/redis/enabled/sentinel.conf
+
+# Source function library.
+. /etc/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+executable=/usr/sbin/redis-sentinel-tagged
+prog=$(basename $executable)
+lockfile=/var/lock/subsys/$prog
+sentinel_user=redis
+sentinel_config=/etc/redis/sentinel/sentinel.conf
+
+start() {
+	[ "$EUID" != "0" ] && exit 4
+	[ "$NETWORKING" = "no" ] && exit 1
+	[ -x "$executable" ] || exit 5
+
+        # Start daemons.
+        echo -n $"Starting ${executable}: "
+        daemon --user ${sentinel_user} $executable $sentinel_config
+	RETVAL=$?
+        echo
+	[ $RETVAL -eq 0 ] && touch $lockfile
+	return $RETVAL
+}
+
+stop() {
+	[ "$EUID" != "0" ] && exit 4
+        echo -n $"Shutting down ${executable}: "
+	killproc $executable
+	RETVAL=$?
+        echo
+	[ $RETVAL -eq 0 ] && rm -f $lockfile
+	return $RETVAL
+}
+
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  status)
+	status $prog
+	;;
+  restart|force-reload)
+	stop
+	start
+	;;
+  try-restart|condrestart)
+	if status $prog > /dev/null; then
+	    stop
+	    start
+	fi
+	;;
+  reload)
+	exit 3
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|status|restart|try-restart|force-reload}"
+	exit 2
+esac
