@@ -10,7 +10,8 @@ URL: http://code.google.com/p/redis/
 Source0: %{name}-%{version}.tar.gz
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: gcc, make, glibc-devel.i686
+BuildRequires: gcc, make, glibc-devel
+#BuildRequires: glibc-devel.i686
 Requires(post): /sbin/chkconfig /usr/sbin/useradd
 Requires(preun): /sbin/chkconfig, /sbin/service
 Requires(postun): /sbin/service
