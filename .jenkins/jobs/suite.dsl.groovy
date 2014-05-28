@@ -1,4 +1,4 @@
-GrabResolver('https://artifactory.tagged.com/artifactory/libs-release-local/')
+@GrabResolver('https://artifactory.tagged.com/artifactory/libs-release-local/')
 @Grab('com.tagged.build:jenkins-dsl-common:0.1.18')
 
 import com.tagged.build.common.*
